@@ -28,14 +28,14 @@ module RemoteDatabaseImporter
     end
 
     def import
-      env = select_environment
+      env   = select_environment
       tasks = [
-        "psql -d #{@config.fetch('local_db')} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();' > remote_database_importer.log",
-        "ssh #{env['ssh_connection']['user']}@#{env['ssh_connection']['host']} 'pg_dump -Fc -U #{env['database']['user']} -d #{env["database"]["name"]} -h localhost -C' > #{env["database"]["name"]}.dump",
-        "rails db:environment:set RAILS_ENV=development; rake db:drop db:create > remote_database_importer.log",
-        "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{@config.fetch('local_db')} #{env['database']['name']}.dump",
-        "rake db:migrate > remote_database_importer.log",
-        "rm remote_database_importer.log"
+        terminate_current_db_sessions,
+        dump_remote_db(env),
+        drop_and_create_local_db,
+        restore_db(env),
+        run_migrations,
+        clear_logfile
       ]
 
       # progressbar = ProgressBar.create(title: "DB von #{env.capitalize} importieren", total: tasks.length, format: '%t %p%% %B %a')
@@ -48,6 +48,31 @@ module RemoteDatabaseImporter
 
       # Nicht im Task Array, damit kein Output angezeigt wird
       # `stellar remove #{env}; stellar snapshot #{env}`
+    end
+
+    private
+    def terminate_current_db_sessions
+      "psql -d #{@config.fetch('local_db')} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();' > remote_database_importer.log"
+    end
+
+    def dump_remote_db(env)
+      "ssh #{env['ssh_connection']['user']}@#{env['ssh_connection']['host']} 'pg_dump -Fc -U #{env['database']['user']} -d #{env["database"]["name"]} -h localhost -C' > #{env["database"]["name"]}.dump"
+    end
+
+    def drop_and_create_local_db
+      "rails db:environment:set RAILS_ENV=development; rake db:drop db:create > remote_database_importer.log"
+    end
+
+    def restore_db(env)
+      "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{@config.fetch('local_db')} #{env['database']['name']}.dump"
+    end
+
+    def run_migrations
+      "rake db:migrate > remote_database_importer.log"
+    end
+
+    def clear_logfile
+      "rm remote_database_importer.log"
     end
   end
 end

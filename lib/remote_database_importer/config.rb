@@ -62,7 +62,7 @@ module RemoteDatabaseImporter
         }
         @config.append(env_config, to: :environments)
 
-        continue = ask("Do you wanna add another environment?", default: "No")
+        continue = ask("Do you wanna add another environment?", default: "no")
         if continue.downcase == "no"
           enter_new_environments = false
         end
