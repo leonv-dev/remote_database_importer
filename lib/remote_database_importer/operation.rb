@@ -1,6 +1,7 @@
 module RemoteDatabaseImporter
   class Operation
     require "remote_database_importer/config"
+    require "ruby-progressbar"
     require "pry"
 
     def initialize
@@ -38,16 +39,12 @@ module RemoteDatabaseImporter
         clear_logfile
       ]
 
-      # progressbar = ProgressBar.create(title: "DB von #{env.capitalize} importieren", total: tasks.length, format: '%t %p%% %B %a')
-
+      progressbar = ProgressBar.create(title: "Import remote DB", total: tasks.length, format: "%t %p%% %B %a")
       tasks.each do |task|
         was_good = system(task)
         return "Can't continue, following task failed: #{task}" unless was_good
-        # progressbar.increment
+        progressbar.increment
       end
-
-      # Nicht im Task Array, damit kein Output angezeigt wird
-      # `stellar remove #{env}; stellar snapshot #{env}`
     end
 
     private

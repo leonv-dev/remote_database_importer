@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     remote_database_importer (0.1.0)
-      thor (~> 1.2.1)
-      tty-config (~> 0.6.0)
+      ruby-progressbar (~> 1.11)
+      tty-config (~> 0.6)
 
 GEM
   remote: https://rubygems.org/
@@ -55,7 +55,6 @@ GEM
     standard (1.16.1)
       rubocop (= 1.35.1)
       rubocop-performance (= 1.14.3)
-    thor (1.2.1)
     tty-config (0.6.0)
     unicode-display_width (2.3.0)
 
@@ -63,7 +62,7 @@ PLATFORMS
   arm64-darwin-21
 
 DEPENDENCIES
-  pry (~> 0.14.1)
+  pry (~> 0.14)
   rake (~> 13.0)
   remote_database_importer!
   rspec (~> 3.0)
