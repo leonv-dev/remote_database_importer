@@ -5,11 +5,11 @@ module RemoteDatabaseImporter
 
     def initialize
       config_handler = RemoteDatabaseImporter::Config.new
-      @config        = config_handler.read_or_create_configfile
+      @config = config_handler.read_or_create_configfile
     end
 
     def environments
-      @config.fetch('environments')
+      @config.fetch("environments")
     end
 
     def select_environment
@@ -28,7 +28,7 @@ module RemoteDatabaseImporter
     end
 
     def import
-      env   = select_environment
+      env = select_environment
       tasks = [
         terminate_current_db_sessions,
         dump_remote_db(env),
@@ -51,12 +51,13 @@ module RemoteDatabaseImporter
     end
 
     private
+
     def terminate_current_db_sessions
-      "psql -d #{@config.fetch('local_db')} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();' > remote_database_importer.log"
+      "psql -d #{@config.fetch("local_db")} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();' > remote_database_importer.log"
     end
 
     def dump_remote_db(env)
-      "ssh #{env['ssh_connection']['user']}@#{env['ssh_connection']['host']} 'pg_dump -Fc -U #{env['database']['user']} -d #{env["database"]["name"]} -h localhost -C' > #{env["database"]["name"]}.dump"
+      "ssh #{env["ssh_connection"]["user"]}@#{env["ssh_connection"]["host"]} 'pg_dump -Fc -U #{env["database"]["user"]} -d #{env["database"]["name"]} -h localhost -C' > #{env["database"]["name"]}.dump"
     end
 
     def drop_and_create_local_db
@@ -64,7 +65,7 @@ module RemoteDatabaseImporter
     end
 
     def restore_db(env)
-      "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{@config.fetch('local_db')} #{env['database']['name']}.dump"
+      "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{@config.fetch("local_db")} #{env["database"]["name"]}.dump"
     end
 
     def run_migrations

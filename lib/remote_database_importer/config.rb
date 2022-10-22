@@ -49,7 +49,7 @@ module RemoteDatabaseImporter
         puts
 
         env_config = {
-          "#{env}" => {
+          env.to_s => {
             "ssh_connection" => {
               "host" => ssh_host,
               "user" => ssh_user
@@ -70,6 +70,5 @@ module RemoteDatabaseImporter
 
       @config.write
     end
-
   end
 end
