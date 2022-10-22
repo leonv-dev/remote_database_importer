@@ -1,8 +1,14 @@
 # RemoteDatabaseImporter
+**RemoteDatabaseImporter** is a small gem with one specific pupose of life: Dump remote databases and import it locally.
 
-Welcome to your new gem! In this directory, you'll find the files you need to be able to package up your Ruby library into a gem. Put your Ruby code in the file `lib/remote_database_importer`. To experiment with that code, run `bin/console` for an interactive prompt.
+**Currently this gem is in the BETA version!**  
+Its very well possible that unexpected errors occur
 
-TODO: Delete this and the text above, and describe your gem
+## Features
+- Define multiple environments (such as staging, production)
+- Rails intergration via rake task
+- Dump remote databases over SSH, it doesn't matter where your database is hosted 
+
 
 ## Installation
 
@@ -21,18 +27,21 @@ Or install it yourself as:
     $ gem install remote_database_importer
 
 ## Usage
+Whenever you want current live data, you can run the command:
 
-TODO: Write usage instructions here
+```ruby
+rake remote_database:import
+```
 
-## Development
+### Config
+The settings for the different environments is in the `remote_database_importer.yml` file stored.  
+When you first run the rake task, it will dynamically create this file for you.
 
-After checking out the repo, run `bin/setup` to install dependencies. Then, run `rake spec` to run the tests. You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
-To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).
-
+![asdf](readme_images/config_creation.png)
 ## Contributing
 
-Bug reports and pull requests are welcome on GitHub at https://github.com/[USERNAME]/remote_database_importer.
+Bug reports and pull requests are very welcome!
 
 ## License
 
