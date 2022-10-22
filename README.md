@@ -7,8 +7,8 @@ Its very well possible that unexpected errors occur
 ## Features
 - Define multiple environments (such as staging, production)
 - Rails intergration via rake task
-- Dump remote databases over SSH, it doesn't matter where your database is hosted 
-
+- Decide for yourself if the dump should be done over a ssh connection or if the db port should be used directly (with pg_dump)
+- It can therefore be used for all hosting providers (Heroku, Kubernetes, self-hosted, etc.)
 
 ## Installation
 
@@ -38,7 +38,23 @@ The settings for the different environments is in the `remote_database_importer.
 When you first run the rake task, it will dynamically create this file for you.
 
 
-![asdf](readme_images/config_creation.png)
+![asdf](readme_images/config_sample.png)
+
+### DB Access
+The easiest and fastest way is to exchange your ssh-key with the server beforehand, so you don't have to enter a password.  
+Otherwise during the rake task execution a password entry is required.
+
+The effective dump call is as follows:
+```ruby
+"ssh #{ssh_user}@#{host} -p #{ssh_port} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' > #{db_dump_location}"
+or
+"pg_dump -Fc 'host=#{host} dbname=#{db_name} user=#{db_user} port=#{postgres_port}' > #{db_dump_location}"
+```
+
+## Limitations
+- At the moment only postgres databases are supported
+- Not suitable for very large databases, because you could run into an SSH timeouts
+
 ## Contributing
 
 Bug reports and pull requests are very welcome!

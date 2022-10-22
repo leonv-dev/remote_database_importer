@@ -24,23 +24,26 @@ module RemoteDatabaseImporter
         end
         env = environments[$stdin.gets.chomp.to_i].values[0]
         raise "Environment couldn't be found!" if env.blank?
-        return env
+        @current_environment = env
+        return
       end
 
-      environments[0].values[0]
+      @current_environment = environments[0].values[0]
     end
 
     def import
-      env = select_environment
+      select_environment
       tasks = [
         terminate_current_db_sessions,
-        dump_remote_db(env),
+        dump_remote_db,
         drop_and_create_local_db,
-        restore_db(env),
+        restore_db,
         run_migrations,
-        clear_logfile
+        remove_logfile,
+        remove_dumpfile,
       ]
 
+      puts "Be aware, you may get asked for a password for the ssh or db connection"
       progressbar = ProgressBar.create(title: "Import remote DB", total: tasks.length, format: "%t %p%% %B %a")
       tasks.each do |task|
         was_good = system(task)
@@ -51,33 +54,50 @@ module RemoteDatabaseImporter
 
     private
 
+    # terminate local db sessions, otherwise the db can't be dropped
     def terminate_current_db_sessions
-      "psql -d #{@config.fetch("local_db")} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();' > #{LOG_FILE}"
+      "psql -d #{@config.fetch("local_db_name")} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();' > #{LOG_FILE}"
     end
 
-    def dump_remote_db(env)
-      ssh_user = env["ssh_connection"]["user"]
-      ssh_host = env["ssh_connection"]["host"]
-      db_user = env["database"]["user"]
+    def dump_remote_db
+      env = @current_environment
+      host = env["connection"]["host"]
       db_name = env["database"]["name"]
-      "ssh #{ssh_user}@#{ssh_host} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' > #{db_name}.dump"
+      db_user = env["database"]["user"]
+      dump_type = env["connection"]["dump_type"]
+      ssh_user = env["connection"]["ssh_user"]
+      ssh_port = env["connection"]["ssh_port"]
+      postgres_port = env["connection"]["postgres_port"]
+
+      if dump_type == 'ssh'
+        "ssh #{ssh_user}@#{host} -p #{ssh_port} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' > #{db_dump_location}"
+      else
+        "pg_dump -Fc 'host=#{host} dbname=#{db_name} user=#{db_user} port=#{postgres_port}' > #{db_dump_location}"
+      end
     end
 
     def drop_and_create_local_db
       "rails db:environment:set RAILS_ENV=development; rake db:drop db:create > #{LOG_FILE}"
     end
 
-    def restore_db(env)
-      db_name = env["database"]["name"]
-      "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{@config.fetch("local_db")} #{db_name}.dump"
+    def restore_db
+      "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{@config.fetch("local_db_name")} #{db_dump_location}"
     end
 
     def run_migrations
       "rake db:migrate > #{LOG_FILE}"
     end
 
-    def clear_logfile
+    def remove_logfile
       "rm #{LOG_FILE}"
+    end
+
+    def remove_dumpfile
+      "rm #{db_dump_location}"
+    end
+
+    def db_dump_location
+      "tmp/#{@current_environment["database"]["name"]}.dump"
     end
   end
 end
