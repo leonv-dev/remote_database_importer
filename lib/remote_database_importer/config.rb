@@ -1,6 +1,7 @@
 module RemoteDatabaseImporter
   class Config
     require "tty/config"
+    require "colorize"
 
     def initialize
       @config = TTY::Config.new
@@ -11,16 +12,16 @@ module RemoteDatabaseImporter
 
     def read_or_create_configfile
       unless @config.exist?
-        puts "============================================================="
+        puts "=============================================================".colorize(:green)
         puts "Hi there! I see there is no config file yet, lets create one!"
         add_default_config
-        puts "============================================================="
+        puts "=============================================================".colorize(:green)
       end
       @config.read
     end
 
     def ask(question, default:)
-      puts "#{question} [#{default}]"
+      puts "#{question} [#{default}]".colorize(:light_blue)
       answer = $stdin.gets.chomp
       answer.present? ? answer : default
     end
@@ -34,18 +35,18 @@ module RemoteDatabaseImporter
       puts
 
       while enter_new_environments
-        puts "#{environment_count}. Environment"
+        puts "#{environment_count}. Environment".colorize(:green)
         env = ask("Whats the name of first environment you wanna add?", default: "staging")
         puts
 
-        puts "#{environment_count}. Environment - SSH settings"
-        ssh_host = ask("Enter the IP address or hostname for the SSH connection:", default: "myawesomeapp.com")
-        ssh_user = ask("Enter the username for the SSH connection:", default: "deployer")
+        puts "Database settings".colorize(:green)
+        db_name = ask("Enter the DB name for the #{env} environment:", default: "myawesomeapp_#{env}")
+        db_user = ask("Enter the DB user for the #{env} environment:", default: "deployer")
         puts
 
-        puts "#{environment_count}. Environment - Database settings"
-        db_name = ask("Enter the DB name for the #{env} environment:", default: "myawesomeapp_#{env}")
-        db_user = ask("Enter the DB user for the #{env} environment:", default: ssh_user)
+        puts "SSH settings".colorize(:green)
+        ssh_host = ask("Enter the IP address or hostname for the SSH connection:", default: "myawesomeapp.com")
+        ssh_user = ask("Enter the username for the SSH connection:", default: "deployer")
         puts
 
         env_config = {
@@ -66,6 +67,7 @@ module RemoteDatabaseImporter
         if continue.downcase == "no"
           enter_new_environments = false
         end
+        environment_count += 1
       end
 
       @config.write
