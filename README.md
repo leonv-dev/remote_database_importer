@@ -12,7 +12,7 @@ Its well possible that unexpected errors can occur.
 
 ## Installation
 
-Add this line to your application's Gemfile:
+Add this line to your application's gemfile:
 
 ```ruby
 gem 'remote_database_importer'
@@ -36,7 +36,7 @@ rake remote_database:import
 ![Import Job Demo](readme_images/import-job.gif)
 
 ### Config
-The settings for the different environments is in the `remote_database_importer.yml` file stored.  
+The settings for the different environments is stored in the `remote_database_importer.yml` file.  
 When you first run the rake task, it will dynamically create this file for you.
 
 
@@ -54,8 +54,8 @@ or
 ```
 
 ## Limitations
-- At the moment only postgres databases are supported
-- It has to run inside a Rails app. There is a CLI command `remote_database_importer import` as an alternative to the rake task, but there are still some Rails commands like `rails db:drop db:create - rails db:migrate`, which makes it currently not possible to use the gem outside of rails
+- At the moment only Postgres databases are supported
+- It has to run inside a Rails app. There is a CLI command `remote_database_importer import` as an alternative to the rake task, but there are still some Rails commands like `rails db:drop db:create - rails db:migrate`, which makes it currently not possible to use the gem outside of Rails
 - Not suitable for very large databases, you could run into SSH timeouts
 
 ## Contributing
