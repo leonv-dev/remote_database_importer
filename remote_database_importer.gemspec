@@ -26,7 +26,7 @@ Gem::Specification.new do |spec|
     end
   end
   spec.bindir = "bin"
-  spec.executables << 'remote_database_importer'
+  spec.executables << "remote_database_importer"
   spec.require_paths = ["lib"]
 
   spec.add_dependency "thor", "~> 1.2"
