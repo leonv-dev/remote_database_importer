@@ -1,8 +1,8 @@
 # RemoteDatabaseImporter
-**RemoteDatabaseImporter** is a small gem with one specific pupose of life: Dump remote databases and import it locally.
+**RemoteDatabaseImporter** is a small gem with one specific reason to exist: Dump remote databases and import it locally.
 
 **This gem is currently in beta phase!**  
-Its well possible that unexpected errors occur.
+Its well possible that unexpected errors can occur.
 
 ## Features
 - Define multiple environments (such as staging, production etc.)
