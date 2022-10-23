@@ -3,8 +3,8 @@ PATH
   specs:
     remote_database_importer (0.1.0)
       colorize (~> 0.8)
-      ruby-progressbar (~> 1.11)
       tty-config (~> 0.6)
+      tty-spinner (~> 0.9)
 
 GEM
   remote: https://rubygems.org/
@@ -58,6 +58,9 @@ GEM
       rubocop (= 1.35.1)
       rubocop-performance (= 1.14.3)
     tty-config (0.6.0)
+    tty-cursor (0.7.1)
+    tty-spinner (0.9.3)
+      tty-cursor (~> 0.7)
     unicode-display_width (2.3.0)
 
 PLATFORMS

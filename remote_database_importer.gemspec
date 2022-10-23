@@ -30,7 +30,7 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "tty-config", "~> 0.6"
-  spec.add_dependency "ruby-progressbar", "~> 1.11"
+  spec.add_dependency "tty-spinner", "~> 0.9"
   spec.add_dependency "colorize", "~> 0.8"
   spec.add_development_dependency "pry", "~> 0.14"
 end

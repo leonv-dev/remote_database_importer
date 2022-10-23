@@ -1,7 +1,7 @@
 module RemoteDatabaseImporter
   class Operation
     require "remote_database_importer/config"
-    require "ruby-progressbar"
+    require "tty/spinner/multi"
     require "pry"
 
     LOG_FILE = "tmp/remote_database_importer.log"
@@ -33,26 +33,35 @@ module RemoteDatabaseImporter
 
     def import
       select_environment
-      tasks = [
-        terminate_current_db_sessions,
-        dump_remote_db,
-        drop_and_create_local_db,
-        restore_db,
-        run_migrations,
-        remove_logfile,
-        remove_dumpfile,
-      ]
+      multi_spinner = TTY::Spinner::Multi.new("[:spinner] Import remote DB", format: :dots_3)
+      tasks = create_tasks_and_spinners(multi_spinner)
 
       puts "Be aware, you may get asked for a password for the ssh or db connection"
-      progressbar = ProgressBar.create(title: "Import remote DB", total: tasks.length, format: "%t %p%% %B %a")
       tasks.each do |task|
-        was_good = system(task)
-        return "Can't continue, following task failed: #{task} - checkout the logfile: #{LOG_FILE}" unless was_good
-        progressbar.increment
+        task[:spinner].auto_spin
+        task_execution_was_successful = system(task[:command])
+        return "Can't continue, following task failed: #{task[:command]} - checkout the logfile: #{LOG_FILE}" unless task_execution_was_successful
+        task[:spinner].stop("... Done!")
       end
     end
 
     private
+
+    def create_tasks_and_spinners(multi_spinner)
+      tasks = [
+        { name: 'Terminate current DB sessions', command: terminate_current_db_sessions },
+        { name: 'Dump remote DB', command: dump_remote_db },
+        { name: 'Drop and create local DB', command: drop_and_create_local_db },
+        { name: 'Restore remote DB', command: restore_db },
+        { name: 'Run migrations', command: run_migrations },
+        { name: 'Remove logfile', command: remove_logfile },
+        { name: 'Remove dumpfile', command: remove_dumpfile },
+      ]
+      tasks.each.with_index(1) do |task, index|
+        task[:spinner] = multi_spinner.register "#{index}/#{tasks.length} :spinner #{task[:name]}"
+      end
+      tasks
+    end
 
     # terminate local db sessions, otherwise the db can't be dropped
     def terminate_current_db_sessions
