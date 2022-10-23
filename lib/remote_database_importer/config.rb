@@ -21,7 +21,7 @@ module RemoteDatabaseImporter
     end
 
     def ask(question, default: nil, options: nil)
-      question += " (#{options.join(' / ')})" if options.present?
+      question += " (#{options.join(" / ")})" if options.present?
       question += " [#{default}]" if default.present?
 
       puts question.colorize(:light_blue)
@@ -49,10 +49,10 @@ module RemoteDatabaseImporter
 
         puts "Connection settings:".colorize(:green)
         host = ask("Enter the IP or hostname of the DB server:", default: "myawesomeapp.com")
-        dump_type = ask("Should the DB dump happen via ssh connection or via pg_restore (if the db lives on a seperat server pg_restore the way to go)", default: "pg_restore", options: ['ssh', 'pg_restore'])
+        dump_type = ask("Should the DB dump happen via ssh connection or via pg_restore (if the db lives on a seperat server pg_restore the way to go)", default: "pg_restore", options: ["ssh", "pg_restore"])
 
         ssh_user, ssh_port, postgres_port = nil
-        if dump_type == 'ssh'
+        if dump_type == "ssh"
           ssh_user = ask("Enter the username for the SSH connection:", default: "deployer")
           ssh_port = ask("Enter the port for the SSH connection:", default: "22")
         else
@@ -71,7 +71,7 @@ module RemoteDatabaseImporter
               "dump_type" => dump_type,
               "postgres_port" => postgres_port,
               "ssh_user" => ssh_user,
-              "ssh_port" => ssh_port,
+              "ssh_port" => ssh_port
             }
           }
         }

@@ -49,13 +49,13 @@ module RemoteDatabaseImporter
 
     def create_tasks_and_spinners(multi_spinner)
       tasks = [
-        { name: 'Terminate current DB sessions', command: terminate_current_db_sessions },
-        { name: 'Dump remote DB', command: dump_remote_db },
-        { name: 'Drop and create local DB', command: drop_and_create_local_db },
-        { name: 'Restore remote DB', command: restore_db },
-        { name: 'Run migrations', command: run_migrations },
-        { name: 'Remove logfile', command: remove_logfile },
-        { name: 'Remove dumpfile', command: remove_dumpfile },
+        {name: "Terminate current DB sessions", command: terminate_current_db_sessions},
+        {name: "Dump remote DB", command: dump_remote_db},
+        {name: "Drop and create local DB", command: drop_and_create_local_db},
+        {name: "Restore remote DB", command: restore_db},
+        {name: "Run migrations", command: run_migrations},
+        {name: "Remove logfile", command: remove_logfile},
+        {name: "Remove dumpfile", command: remove_dumpfile}
       ]
       tasks.each.with_index(1) do |task, index|
         task[:spinner] = multi_spinner.register "#{index}/#{tasks.length} :spinner #{task[:name]}"
@@ -78,7 +78,7 @@ module RemoteDatabaseImporter
       ssh_port = env["connection"]["ssh_port"]
       postgres_port = env["connection"]["postgres_port"]
 
-      if dump_type == 'ssh'
+      if dump_type == "ssh"
         "ssh #{ssh_user}@#{host} -p #{ssh_port} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' > #{db_dump_location}"
       else
         "pg_dump -Fc 'host=#{host} dbname=#{db_name} user=#{db_user} port=#{postgres_port}' > #{db_dump_location}"
