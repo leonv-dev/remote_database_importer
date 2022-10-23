@@ -35,7 +35,7 @@ rake remote_database:import
 
 ![Import Job Demo](readme_images/import-job.gif)
 
-### Config
+### Config
 The settings for the different environments is in the `remote_database_importer.yml` file stored.  
 When you first run the rake task, it will dynamically create this file for you.
 
