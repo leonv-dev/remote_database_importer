@@ -1,0 +1,14 @@
+#!/usr/bin/env ruby
+
+require 'thor'
+require_relative '../lib/remote_database_importer/operation'
+
+class RemoteDatabaseImporterCLI < Thor
+  desc "Restore remote database and import it locally", "asdf"
+  def import
+    importer = RemoteDatabaseImporter::Operation.new
+    importer.import
+  end
+end
+
+RemoteDatabaseImporterCLI.start

@@ -3,6 +3,7 @@ PATH
   specs:
     remote_database_importer (0.1.0)
       colorize (~> 0.8)
+      thor (~> 1.2)
       tty-config (~> 0.6)
       tty-spinner (~> 0.9)
 
@@ -57,6 +58,7 @@ GEM
     standard (1.16.1)
       rubocop (= 1.35.1)
       rubocop-performance (= 1.14.3)
+    thor (1.2.1)
     tty-config (0.6.0)
     tty-cursor (0.7.1)
     tty-spinner (0.9.3)
