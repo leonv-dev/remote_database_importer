@@ -5,9 +5,9 @@
 Its very well possible that unexpected errors occur
 
 ## Features
-- Define multiple environments (such as staging, production)
+- Define multiple environments (such as staging, production etc.)
 - Rails intergration via rake task
-- Decide for yourself if the dump should be done over a ssh connection or if the db port should be used directly (with pg_dump)
+- Decide for yourself if the dump should be done over ssh or if pg_dump should connect to the DB port directly
 - It can therefore be used for all hosting providers (Heroku, Kubernetes, self-hosted, etc.)
 
 ## Installation
@@ -48,14 +48,14 @@ Otherwise during the rake task execution a password entry is required.
 
 The effective dump call is as follows:
 ```ruby
-"ssh #{ssh_user}@#{host} -p #{ssh_port} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' > #{db_dump_location}"
+"ssh SSH_USER@HOST -p SSH_PORT 'pg_dump -Fc -U DB_USER -d DB_NAME -h localhost -C' > DB_DUMP_LOCATION"
 or
-"pg_dump -Fc 'host=#{host} dbname=#{db_name} user=#{db_user} port=#{postgres_port}' > #{db_dump_location}"
+"pg_dump -Fc 'host=HOST dbname=DB_NAME user=DB_USER port=POSTGRES_PORT' > DB_DUMP_LOCATION"
 ```
 
 ## Limitations
 - At the moment only postgres databases are supported
-- Not suitable for very large databases, because you could run into an SSH timeouts
+- Not suitable for very large databases, you could run into SSH timeouts
 
 ## Contributing
 
