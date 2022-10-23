@@ -1,14 +1,14 @@
 # RemoteDatabaseImporter
 **RemoteDatabaseImporter** is a small gem with one specific pupose of life: Dump remote databases and import it locally.
 
-**Currently this gem is in the BETA version!**  
-Its very well possible that unexpected errors occur
+**This gem is currently in beta phase!**  
+Its well possible that unexpected errors occur.
 
 ## Features
 - Define multiple environments (such as staging, production etc.)
 - Rails intergration via rake task
 - Decide for yourself if the dump should be done over ssh or if pg_dump should connect to the DB port directly
-- It can therefore be used for all hosting providers (Heroku, Kubernetes, self-hosted, etc.)
+- It can therefore be used for almost all hosting providers (Heroku, Kubernetes, self-hosted, etc.)
 
 ## Installation
 
@@ -55,6 +55,7 @@ or
 
 ## Limitations
 - At the moment only postgres databases are supported
+- It has to run inside a Rails app. There is a CLI command `remote_database_importer import` as an alternative to the rake task, but there are still some Rails commands like `rails db:drop db:create - rails db:migrate`, which makes it currently not possible to use the gem outside of rails
 - Not suitable for very large databases, you could run into SSH timeouts
 
 ## Contributing
