@@ -2,7 +2,6 @@ module RemoteDatabaseImporter
   class Operation
     require "remote_database_importer/config"
     require "tty/spinner/multi"
-    require "pry"
 
     LOG_FILE = "tmp/remote_database_importer.log"
 

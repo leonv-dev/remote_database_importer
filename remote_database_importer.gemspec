@@ -5,11 +5,11 @@ require_relative "lib/remote_database_importer/version"
 Gem::Specification.new do |spec|
   spec.name = "remote_database_importer"
   spec.version = RemoteDatabaseImporter::VERSION
-  spec.authors = ["Leon"]
+  spec.authors = ["Leon Vogt"]
   spec.email = ["nonick@nonick.ch"]
 
-  spec.summary = "Dump remote database and import locally"
-  spec.description = "Dump remote database and import locally. Currently only postgres databases supported"
+  spec.summary = "Dump remote databases and import it locally"
+  spec.description = "Dump remote databases and import it locally. At the moment only Postgres databases are supported"
   spec.homepage = "https://github.com/leon-vogt/remote_database_importer"
   spec.license = "MIT"
   spec.required_ruby_version = ">= 2.6.0"
@@ -33,5 +33,4 @@ Gem::Specification.new do |spec|
   spec.add_dependency "tty-config", "~> 0.6"
   spec.add_dependency "tty-spinner", "~> 0.9"
   spec.add_dependency "colorize", "~> 0.8"
-  spec.add_development_dependency "pry", "~> 0.14"
 end
