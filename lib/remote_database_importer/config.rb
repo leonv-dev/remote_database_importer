@@ -15,6 +15,8 @@ module RemoteDatabaseImporter
         puts "===========================================================".colorize(:green)
         puts "Hi there! There is no config file yet, lets create one! 😄"
         create_default_config
+        config_location = [@config.filename, @config.extname].join
+        puts "Created config file: #{config_location}"
         puts "===========================================================".colorize(:green)
       end
       @config.read
@@ -49,10 +51,10 @@ module RemoteDatabaseImporter
 
         puts "Connection settings:".colorize(:green)
         host = ask("Enter the IP or hostname of the DB server:", default: "myawesomeapp.com")
-        dump_type = ask("Should the dump happen over a ssh connection or can pg_dump access the DB port directly? (if the DB lives on a seperat server pg_dump the way to go)", default: "pg_dump", options: ["ssh", "pg_dump"])
+        dump_type = ask("Should the DB dump happen over a ssh tunnel or can pg_dump connect to the DB port directly?", default: "pg_dump", options: ["ssh_tunnel", "pg_dump"])
 
         ssh_user, ssh_port, postgres_port = nil
-        if dump_type == "ssh"
+        if dump_type == "ssh_tunnel"
           ssh_user = ask("Enter the username for the SSH connection:", default: "deployer")
           ssh_port = ask("Enter the port for the SSH connection:", default: "22")
         else
@@ -87,13 +89,5 @@ module RemoteDatabaseImporter
 
       @config.write
     end
-
-    # TODO: validate user input
-    # private
-    # def validate_config(config)
-    #   config.each do |key, value|
-    #
-    #   end
-    # end
   end
 end
