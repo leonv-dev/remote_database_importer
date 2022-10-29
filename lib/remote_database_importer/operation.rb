@@ -48,8 +48,8 @@ module RemoteDatabaseImporter
 
     def create_tasks_and_spinners(multi_spinner)
       tasks = [
-        {name: "Terminate current DB sessions", command: terminate_current_db_sessions},
         {name: "Dump remote DB", command: dump_remote_db},
+        {name: "Terminate current DB sessions", command: terminate_current_db_sessions},
         {name: "Drop and create local DB", command: drop_and_create_local_db},
         {name: "Restore remote DB", command: restore_db},
         {name: "Run migrations", command: run_migrations},
