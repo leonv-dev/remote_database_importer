@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    remote_database_importer (0.1.0)
+    remote_database_importer (0.1.2)
       colorize (~> 0.8)
       thor (~> 1.2)
       tty-config (~> 0.6)
