@@ -32,6 +32,7 @@ module RemoteDatabaseImporter
 
     def import
       select_environment
+      time_start = Time.now
       multi_spinner = TTY::Spinner::Multi.new("[:spinner] Import remote DB", format: :dots_3)
       tasks = create_tasks_and_spinners(multi_spinner)
 
@@ -42,6 +43,7 @@ module RemoteDatabaseImporter
         return "Can't continue, following task failed: #{task[:command]} - checkout the logfile: #{LOG_FILE}" unless task_execution_was_successful
         task[:spinner].stop("... Done!")
       end
+      puts seconds_to_human_readable_time(Time.now - time_start)
     end
 
     private
@@ -77,7 +79,7 @@ module RemoteDatabaseImporter
       ssh_port = env["connection"]["ssh_port"]
       postgres_port = env["connection"]["postgres_port"]
 
-      if dump_type == "ssh"
+      if dump_type == "ssh_tunnel"
         "ssh #{ssh_user}@#{host} -p #{ssh_port} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' > #{db_dump_location}"
       else
         "pg_dump -Fc 'host=#{host} dbname=#{db_name} user=#{db_user} port=#{postgres_port}' > #{db_dump_location}"
@@ -106,6 +108,16 @@ module RemoteDatabaseImporter
 
     def db_dump_location
       "tmp/#{@current_environment["database"]["name"]}.dump"
+    end
+
+    def seconds_to_human_readable_time(secs)
+      [[60, :seconds], [60, :minutes], [24, :hours], [Float::INFINITY, :days]].map { |count, name|
+        if secs > 0
+          secs, n = secs.divmod(count)
+
+          "#{n.to_i} #{name}" unless n.to_i == 0
+        end
+      }.compact.reverse.join(" ")
     end
   end
 end
