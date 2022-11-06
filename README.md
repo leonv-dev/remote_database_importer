@@ -7,6 +7,7 @@ Its well possible that unexpected errors can occur.
 ## Features
 - Define multiple environments (such as staging, production etc.)
 - Rails intergration via rake task
+- Define custom commands that should run after successful import
 - Decide for yourself if the dump should be done over ssh or if pg_dump should connect to the DB port directly
 - It can therefore be used for almost all hosting providers (Heroku, Kubernetes, self-hosted, etc.)
 
@@ -43,8 +44,10 @@ When you first run the rake task, it will dynamically create this file for you.
 ![Config sample](readme_assets/config_sample.png)
 
 ### DB Access
-The easiest and fastest way is to exchange your ssh-key with the server beforehand, so you don't have to enter a password.  
-Otherwise during the rake task execution a password entry is required.
+The dump of the remote database happens with the tool: [pg_dump](https://www.postgresql.org/docs/current/app-pgdump.html). 
+There are two opions for connecting to the remote databse:
+- pg_dump connects directly to the databse
+- pg_dump connects through a shh tunnel to the databse
 
 The effective dump call is as follows:
 ```ruby
@@ -52,6 +55,11 @@ The effective dump call is as follows:
 or
 "pg_dump -Fc 'host=HOST dbname=DB_NAME user=DB_USER port=POSTGRES_PORT' > DB_DUMP_LOCATION"
 ```
+
+### Password Input
+Because this gem doesn't store passwords you will have to enter the passwords manually during the rake task.  
+Depending on the choosen connection model the password prompt will be for the ssh connection or the DB access.  
+If you choose to dump the databse over an ssh_tunnel, the easiest way will be to exchange your ssh-key with the server beforehand, so you don't have to enter a password.  
 
 ## Limitations
 - At the moment only Postgres databases are supported

@@ -54,9 +54,9 @@ module RemoteDatabaseImporter
         {name: "Terminate current DB sessions", command: terminate_current_db_sessions},
         {name: "Drop and create local DB", command: drop_and_create_local_db},
         {name: "Restore remote DB", command: restore_db},
-        {name: "Run migrations", command: run_migrations},
         {name: "Remove logfile", command: remove_logfile},
-        {name: "Remove dumpfile", command: remove_dumpfile}
+        {name: "Remove dumpfile", command: remove_dumpfile},
+        {name: "Custom commands", command: custom_commands}
       ]
       tasks.each.with_index(1) do |task, index|
         task[:spinner] = multi_spinner.register "#{index}/#{tasks.length} :spinner #{task[:name]}"
@@ -94,16 +94,16 @@ module RemoteDatabaseImporter
       "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{@config.fetch("local_db_name")} #{db_dump_location}"
     end
 
-    def run_migrations
-      "rake db:migrate > #{LOG_FILE}"
-    end
-
     def remove_logfile
       "rm #{LOG_FILE}"
     end
 
     def remove_dumpfile
       "rm #{db_dump_location}"
+    end
+
+    def custom_commands
+      @config.fetch("custom_commands")
     end
 
     def db_dump_location

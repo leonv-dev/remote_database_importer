@@ -87,6 +87,11 @@ module RemoteDatabaseImporter
         end
       end
 
+      puts "Define custom commands that run after successful import:".colorize(:green)
+      custom_commands = ask("Enter semicolon separated commands that should run after importing the DB:", default: "rake db:migrate; echo 'All Done'")
+      puts
+
+      @config.set(:custom_commands, value: custom_commands)
       @config.write
     end
   end
