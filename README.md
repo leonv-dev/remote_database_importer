@@ -55,7 +55,7 @@ or
 
 ## Limitations
 - At the moment only Postgres databases are supported
-- It has to run inside a Rails app. There is a CLI command `remote_database_importer import` as an alternative to the rake task, but there are still some Rails commands like `rails db:drop db:create - rails db:migrate`, which makes it currently not possible to use the gem outside of Rails
+- It has to run inside a Rails app.
 - Not suitable for very large databases, you could run into SSH timeouts
 
 ## Contributing
