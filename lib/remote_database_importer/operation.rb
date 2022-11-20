@@ -3,15 +3,17 @@ module RemoteDatabaseImporter
     require "remote_database_importer/config"
     require "tty/spinner/multi"
 
+    attr_accessor :config
+    attr_accessor :current_environment
+
     LOG_FILE = "tmp/remote_database_importer.log"
 
     def initialize
-      config_handler = RemoteDatabaseImporter::Config.new
-      @config = config_handler.read_or_create_configfile
+      @config = RemoteDatabaseImporter::Config.new.read_or_create_configfile
     end
 
     def environments
-      @config.fetch("environments")
+      config.fetch("environments")
     end
 
     def select_environment
@@ -66,18 +68,17 @@ module RemoteDatabaseImporter
 
     # terminate local db sessions, otherwise the db can't be dropped
     def terminate_current_db_sessions
-      "psql -d #{@config.fetch("local_db_name")} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();' > #{LOG_FILE}"
+      "psql -d #{config.fetch("local_db_name")} -c 'SELECT pg_terminate_backend(pg_stat_activity.pid) FROM pg_stat_activity WHERE datname = current_database() AND pid <> pg_backend_pid();' > #{LOG_FILE}"
     end
 
     def dump_remote_db
-      env = @current_environment
-      host = env["connection"]["host"]
-      db_name = env["database"]["name"]
-      db_user = env["database"]["user"]
-      dump_type = env["connection"]["dump_type"]
-      ssh_user = env["connection"]["ssh_user"]
-      ssh_port = env["connection"]["ssh_port"]
-      postgres_port = env["connection"]["postgres_port"]
+      host          = current_environment["connection"]["host"]
+      db_name       = current_environment["database"]["name"]
+      db_user       = current_environment["database"]["user"]
+      dump_type     = current_environment["connection"]["dump_type"]
+      ssh_user      = current_environment["connection"]["ssh_user"]
+      ssh_port      = current_environment["connection"]["ssh_port"]
+      postgres_port = current_environment["connection"]["postgres_port"]
 
       if dump_type == "ssh_tunnel"
         "ssh #{ssh_user}@#{host} -p #{ssh_port} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' > #{db_dump_location}"
@@ -91,7 +92,7 @@ module RemoteDatabaseImporter
     end
 
     def restore_db
-      "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{@config.fetch("local_db_name")} #{db_dump_location}"
+      "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{config.fetch("local_db_name")} #{db_dump_location}"
     end
 
     def remove_logfile
@@ -103,11 +104,11 @@ module RemoteDatabaseImporter
     end
 
     def custom_commands
-      @config.fetch("custom_commands")
+      config.fetch("custom_commands")
     end
 
     def db_dump_location
-      "tmp/#{@current_environment["database"]["name"]}.dump"
+      "tmp/#{current_environment["database"]["name"]}.dump"
     end
 
     def seconds_to_human_readable_time(secs)

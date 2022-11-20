@@ -1,32 +1,35 @@
 module RemoteDatabaseImporter
   class Config
     require "tty/config"
-    require "colorize"
+    require_relative "colorize"
 
+    attr_accessor :config
+    
     def initialize
       @config = TTY::Config.new
-      @config.filename = "remote_database_importer"
-      @config.extname = ".yml"
-      @config.append_path Dir.pwd
+      
+      config.filename = "remote_database_importer"
+      config.extname = ".yml"
+      config.append_path Dir.pwd
     end
 
     def read_or_create_configfile
-      unless @config.exist?
-        puts "===========================================================".colorize(:green)
+      unless config.exist?
+        puts Colorize.green("===========================================================")
         puts "Hi there! There is no config file yet, lets create one! 😄"
         create_default_config
-        config_location = [@config.filename, @config.extname].join
+        config_location = [config.filename, config.extname].join
         puts "Created config file: #{config_location}"
-        puts "===========================================================".colorize(:green)
+        puts Colorize.green("===========================================================")
       end
-      @config.read
+      config.read
     end
 
     def ask(question, default: nil, options: nil)
       question += " (#{options.join(" / ")})" if options.present?
       question += " [#{default}]" if default.present?
 
-      puts question.colorize(:light_blue)
+      puts Colorize.blue(question)
       answer = $stdin.gets.chomp
       answer.present? ? answer : default
     end
@@ -36,20 +39,20 @@ module RemoteDatabaseImporter
       environment_count = 1
 
       local_db_name = ask("Whats the name of the local database you wanna import to?", default: "myawesomeapp_development")
-      @config.set(:local_db_name, value: local_db_name)
+      config.set(:local_db_name, value: local_db_name)
       puts
 
       while enter_new_environments
-        puts "#{environment_count}. Environment".colorize(:green)
+        puts Colorize.green("#{environment_count}. Environment")
         env = ask("Whats the name of the #{environment_count}. environment you wanna add?", default: "staging")
         puts
 
-        puts "Database settings:".colorize(:green)
+        puts Colorize.green("Database settings:")
         db_name = ask("Enter the DB name for the #{env} environment:", default: "myawesomeapp_#{env}")
         db_user = ask("Enter the DB user for the #{env} environment:", default: "deployer")
         puts
 
-        puts "Connection settings:".colorize(:green)
+        puts Colorize.green("Connection settings:")
         host = ask("Enter the IP or hostname of the DB server:", default: "myawesomeapp.com")
         dump_type = ask("Should the DB dump happen over a ssh tunnel or can pg_dump connect to the DB port directly?", default: "pg_dump", options: ["ssh_tunnel", "pg_dump"])
 
@@ -77,7 +80,7 @@ module RemoteDatabaseImporter
             }
           }
         }
-        @config.append(env_config, to: :environments)
+        config.append(env_config, to: :environments)
 
         continue = ask("Do you wanna add another environment? (anything other than 'yes' will exit)")
         if continue&.downcase == "yes"
@@ -87,12 +90,12 @@ module RemoteDatabaseImporter
         end
       end
 
-      puts "Define custom commands that run after successful import:".colorize(:green)
+      puts Colorize.green("Define custom commands that run after successful import:")
       custom_commands = ask("Enter semicolon separated commands that should run after importing the DB:", default: "rake db:migrate; echo 'All Done'")
       puts
 
-      @config.set(:custom_commands, value: custom_commands)
-      @config.write
+      config.set(:custom_commands, value: custom_commands)
+      config.write
     end
   end
 end
