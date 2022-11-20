@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4 (2022-11-17)
+- Remove colorize as a dependency
+- Code refactoring
+
 ## 0.1.3 (2022-11-06)
 - Remove Thor as a dependency
 - Add custom commands that run after the successful import of the remote database
