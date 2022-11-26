@@ -72,16 +72,17 @@ module RemoteDatabaseImporter
     end
 
     def dump_remote_db
-      host          = current_environment["connection"]["host"]
-      db_name       = current_environment["database"]["name"]
-      db_user       = current_environment["database"]["user"]
-      dump_type     = current_environment["connection"]["dump_type"]
-      ssh_user      = current_environment["connection"]["ssh_user"]
-      ssh_port      = current_environment["connection"]["ssh_port"]
-      postgres_port = current_environment["connection"]["postgres_port"]
+      host            = current_environment["connection"]["host"]
+      db_name         = current_environment["database"]["name"]
+      db_user         = current_environment["database"]["user"]
+      dump_type       = current_environment["connection"]["dump_type"]
+      ssh_user        = current_environment["connection"]["ssh_user"]
+      ssh_port        = current_environment["connection"]["ssh_port"]
+      postgres_port   = current_environment["connection"]["postgres_port"]
+      maybe_compress  = config.fetch("compress_dump") ? "| gzip" : ""
 
       if dump_type == "ssh_tunnel"
-        "ssh #{ssh_user}@#{host} -p #{ssh_port} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' > #{db_dump_location}"
+        "ssh #{ssh_user}@#{host} -p #{ssh_port} 'pg_dump -Fc -U #{db_user} -d #{db_name} -h localhost -C' #{maybe_compress} > #{db_dump_location}"
       else
         "pg_dump -Fc 'host=#{host} dbname=#{db_name} user=#{db_user} port=#{postgres_port}' > #{db_dump_location}"
       end
@@ -92,7 +93,11 @@ module RemoteDatabaseImporter
     end
 
     def restore_db
-      "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{config.fetch("local_db_name")} #{db_dump_location}"
+      if config.fetch("compress_dump")
+        "gunzip -c #{db_dump_location} | pg_restore --no-privileges --no-owner --dbname #{config.fetch("local_db_name")}"
+      else
+        "pg_restore --jobs 8 --no-privileges --no-owner --dbname #{config.fetch("local_db_name")} #{db_dump_location}"
+      end
     end
 
     def remove_logfile
@@ -108,7 +113,7 @@ module RemoteDatabaseImporter
     end
 
     def db_dump_location
-      "tmp/#{current_environment["database"]["name"]}.dump"
+      "tmp/#{current_environment["database"]["name"]}.dump#{'.gz' if config.fetch("compress_dump")}"
     end
 
     def seconds_to_human_readable_time(secs)

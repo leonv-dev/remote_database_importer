@@ -90,11 +90,16 @@ module RemoteDatabaseImporter
         end
       end
 
-      puts Colorize.green("Define custom commands that run after successful import:")
-      custom_commands = ask("Enter semicolon separated commands that should run after importing the DB:", default: "rake db:migrate; echo 'All Done'")
+      puts
+      compress_dump = ask("Do you wanna compress the pg_dump export for shorter waiting time?", default: "yes")
+      config.set(:compress_dump, value: compress_dump.downcase == "yes")
       puts
 
+      puts Colorize.green("Define custom commands that run after successful import:")
+      custom_commands = ask("Enter semicolon separated commands that should run after importing the DB:", default: "rake db:migrate; echo 'All Done'")
       config.set(:custom_commands, value: custom_commands)
+      puts
+
       config.write
     end
   end
