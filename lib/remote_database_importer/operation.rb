@@ -72,12 +72,12 @@ module RemoteDatabaseImporter
     end
 
     def dump_remote_db
-      host          = current_environment["connection"]["host"]
-      db_name       = current_environment["database"]["name"]
-      db_user       = current_environment["database"]["user"]
-      dump_type     = current_environment["connection"]["dump_type"]
-      ssh_user      = current_environment["connection"]["ssh_user"]
-      ssh_port      = current_environment["connection"]["ssh_port"]
+      host = current_environment["connection"]["host"]
+      db_name = current_environment["database"]["name"]
+      db_user = current_environment["database"]["user"]
+      dump_type = current_environment["connection"]["dump_type"]
+      ssh_user = current_environment["connection"]["ssh_user"]
+      ssh_port = current_environment["connection"]["ssh_port"]
       postgres_port = current_environment["connection"]["postgres_port"]
 
       if dump_type == "ssh_tunnel"

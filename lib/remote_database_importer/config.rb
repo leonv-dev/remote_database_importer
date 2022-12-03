@@ -4,10 +4,10 @@ module RemoteDatabaseImporter
     require_relative "colorize"
 
     attr_accessor :config
-    
+
     def initialize
       @config = TTY::Config.new
-      
+
       config.filename = "remote_database_importer"
       config.extname = ".yml"
       config.append_path Dir.pwd
@@ -63,7 +63,7 @@ module RemoteDatabaseImporter
         else
           postgres_port = ask("Enter the database port for the pg_dump command:", default: "5432")
         end
-      
+
         puts Colorize.green("Define custom commands that run after successful import:")
         custom_commands = ask("Enter semicolon separated commands that should run after importing the DB:", default: "rake db:migrate; echo 'All Done'")
         puts

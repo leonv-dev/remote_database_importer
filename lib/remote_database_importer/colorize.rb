@@ -4,7 +4,7 @@ class Colorize
   end
 
   def self.green(text)
-    "\e[32m#{text}\e[0m"    
+    "\e[32m#{text}\e[0m"
   end
 
   def self.blue(text)
