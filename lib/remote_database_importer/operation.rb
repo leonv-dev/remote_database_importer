@@ -104,7 +104,7 @@ module RemoteDatabaseImporter
     end
 
     def custom_commands
-      config.fetch("custom_commands")
+      current_environment["custom_commands"]
     end
 
     def db_dump_location

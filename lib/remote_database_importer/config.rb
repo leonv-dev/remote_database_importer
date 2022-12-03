@@ -63,6 +63,9 @@ module RemoteDatabaseImporter
         else
           postgres_port = ask("Enter the database port for the pg_dump command:", default: "5432")
         end
+      
+        puts Colorize.green("Define custom commands that run after successful import:")
+        custom_commands = ask("Enter semicolon separated commands that should run after importing the DB:", default: "rake db:migrate; echo 'All Done'")
         puts
 
         env_config = {
@@ -77,7 +80,8 @@ module RemoteDatabaseImporter
               "postgres_port" => postgres_port,
               "ssh_user" => ssh_user,
               "ssh_port" => ssh_port
-            }
+            },
+            "custom_commands" => custom_commands
           }
         }
         config.append(env_config, to: :environments)
@@ -90,11 +94,6 @@ module RemoteDatabaseImporter
         end
       end
 
-      puts Colorize.green("Define custom commands that run after successful import:")
-      custom_commands = ask("Enter semicolon separated commands that should run after importing the DB:", default: "rake db:migrate; echo 'All Done'")
-      puts
-
-      config.set(:custom_commands, value: custom_commands)
       config.write
     end
   end
