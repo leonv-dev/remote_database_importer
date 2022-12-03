@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    remote_database_importer (0.1.4)
+    remote_database_importer (0.1.5)
       tty-config (~> 0.6)
       tty-spinner (~> 0.9)
 
