@@ -1,5 +1,8 @@
 # Changelog
 
+## 0.1.5 (2022-12-03)
+- Define custom commands for each environment
+
 ## 0.1.4 (2022-11-17)
 - Remove colorize as a dependency
 - Code refactoring
